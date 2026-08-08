@@ -192,9 +192,9 @@ function AuthPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@college.edu"
-                    aria-invalid={Boolean(errors.email)}
+                    aria-invalid={Boolean(errors['email'])}
                   />
-                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                  {errors['email'] && <p className="text-xs text-destructive">{errors['email']}</p>}
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="password">Password</Label>
@@ -204,9 +204,9 @@ function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    aria-invalid={Boolean(errors.password)}
+                    aria-invalid={Boolean(errors['password'])}
                   />
-                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+                  {errors['password'] && <p className="text-xs text-destructive">{errors['password']}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy && <Loader2 className="size-4 animate-spin" />}

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession, initialsOf } from "@/hooks/useAuth";
+import { useSession, initialsOf, displayName } from "@/hooks/useAuth";
 import { PageHeader, LoadingCards, ErrorNote } from "@/components/Page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,7 +98,7 @@ function ProfilePage() {
       <div className="surface mb-5 flex items-center gap-4 p-5">
         <Avatar className="size-14">
           <AvatarFallback className="bg-primary text-primary-foreground">
-            {initialsOf(user)}
+            {initialsOf(displayName(user, profile?.full_name))}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">

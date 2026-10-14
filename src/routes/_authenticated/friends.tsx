@@ -218,7 +218,7 @@ function FriendsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  if (friendships.isLoading) {
+  if (friendships.isPending || !friendships.data) {
     return (
       <div className="mx-auto max-w-3xl">
         <PageHeader title="Friends" />

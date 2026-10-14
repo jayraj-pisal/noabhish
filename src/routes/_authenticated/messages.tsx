@@ -146,7 +146,7 @@ function MessagesPage() {
 
   const selected = friends.find((row) => row.other?.id === friendId)?.other ?? null;
 
-  if (friendships.isLoading) {
+  if (friendships.isPending || !friendships.data) {
     return (
       <div className="mx-auto max-w-5xl">
         <PageHeader title="Messages" />

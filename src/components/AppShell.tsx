@@ -145,7 +145,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const pendingRequests = friendships.data?.incoming.length ?? 0;
   const unreadCount = unreadDms.data?.length ?? 0;
-  const counts = { "/friends": pendingRequests, "/messages": unreadCount };
+  const counts: Record<string, number> = { "/friends": pendingRequests, "/messages": unreadCount };
 
   const allReminders = [
     ...reminders,

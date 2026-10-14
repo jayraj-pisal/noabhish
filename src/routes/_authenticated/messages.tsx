@@ -34,8 +34,8 @@ export const Route = createFileRoute("/_authenticated/messages")({
       { property: "og:description", content: "Chat privately with your study circle." },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>): { friend?: string } => ({
-    friend: typeof search.friend === "string" && search.friend.length > 0 ? search.friend : undefined,
+  validateSearch: (search: Record<string, unknown>): { friend?: string | undefined } => ({
+    friend: typeof search["friend"] === "string" && search["friend"].length > 0 ? search["friend"] : undefined,
   }),
   component: MessagesPage,
 });
@@ -247,7 +247,7 @@ function MessagesPage() {
                   size="icon"
                   className="lg:hidden"
                   aria-label="Back to conversations"
-                  onClick={() => navigate({ to: "/messages", search: { friend: undefined } })}
+                  onClick={() => navigate({ to: "/messages", search: {} })}
                 >
                   <ArrowLeft className="size-4" />
                 </Button>

@@ -211,8 +211,9 @@ function MessagesPage() {
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium">{person.full_name || "Student"}</span>
                       <span className="block truncate text-xs text-muted-foreground">
-                        {last ? (last.mine_hint ?? "") : "No messages yet"}
-                        {last ? last.body : ""}
+                        {last
+                          ? `${last.sender_id === user?.id ? "You: " : ""}${last.body}`
+                          : "No messages yet"}
                       </span>
                     </span>
                     {pending > 0 && (

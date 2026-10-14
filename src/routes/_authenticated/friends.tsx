@@ -68,7 +68,7 @@ function PersonRow({
       <div className="min-w-0">
         <p className="truncate text-sm font-medium">{name}</p>
         <p className="truncate text-xs text-muted-foreground">
-          {meta ?? [person?.course, person?.institution].filter(Boolean).join(" · ") || "Student on StudyHub"}
+          {meta ?? ([person?.course, person?.institution].filter(Boolean).join(" · ") || "Student on StudyHub")}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">{children}</div>

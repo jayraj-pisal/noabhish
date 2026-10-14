@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, CheckSquare, FileText, Users, Video } from "lucide-react";
+import { CalendarDays, CheckSquare, FileText, UserRound, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession, displayName } from "@/hooks/useAuth";
+import { useSession, displayName, initialsOf } from "@/hooks/useAuth";
+import { useFriendships, useInvitations, useUnreadMessages } from "@/hooks/useSocial";
 import { PageHeader, LoadingCards } from "@/components/Page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fmtDayLabel, fmtTime, toDateKey } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -26,6 +28,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardPage() {
   const { user } = useSession();
   const todayKey = toDateKey(new Date());
+
+  const friendships = useFriendships(user?.id);
+  const invitations = useInvitations(user?.id);
+  const unreadDms = useUnreadMessages(user?.id);
 
   const overview = useQuery({
     queryKey: ["stats", user?.id],
@@ -71,8 +77,27 @@ function DashboardPage() {
     { label: "Tasks due today", value: openToday.length, icon: CheckSquare, to: "/tasks" as const },
     { label: "Sessions today", value: todaysSessions.length, icon: CalendarDays, to: "/planner" as const },
     { label: "Resources shared", value: resourceCount, icon: FileText, to: "/resources" as const },
-    { label: "Tasks completed", value: done, icon: Users, to: "/tasks" as const },
+    { label: "Tasks completed", value: done, icon: UserRound, to: "/tasks" as const },
   ];
+
+  const friends = friendships.data?.friends ?? [];
+  const pendingRequests = friendships.data?.incoming.length ?? 0;
+  const incomingInvites = invitations.data?.incoming.length ?? 0;
+  const unreadCount = unreadDms.data?.length ?? 0;
+  const socialNotes = [
+    pendingRequests > 0
+      ? { text: `${pendingRequests} friend request${pendingRequests > 1 ? "s" : ""} waiting`, to: "/friends" as const }
+      : null,
+    incomingInvites > 0
+      ? {
+          text: `${incomingInvites} group invite${incomingInvites > 1 ? "s" : ""} for you`,
+          to: "/friends" as const,
+        }
+      : null,
+    unreadCount > 0
+      ? { text: `${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`, to: "/messages" as const }
+      : null,
+  ].filter((note) => note !== null);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -139,6 +164,50 @@ function DashboardPage() {
           )}
         </section>
       </div>
+
+      <section className="surface mt-5 p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-medium">Study circle</h2>
+          <Button asChild size="sm" variant="ghost">
+            <Link to="/friends">Manage</Link>
+          </Button>
+        </div>
+        {friends.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No friends yet — search for a classmate and send them a request to start sharing.
+          </p>
+        ) : (
+          <div className="flex items-center gap-3">
+            <ul className="flex flex-wrap items-center gap-2">
+              {friends.slice(0, 7).map((row) => (
+                <li key={row.id}>
+                  <Avatar className="size-9">
+                    {row.other?.avatar_url && <AvatarImage src={row.other.avatar_url} alt="" />}
+                    <AvatarFallback className="bg-secondary text-xs text-secondary-foreground">
+                      {initialsOf(row.other?.full_name || "Student")}
+                    </AvatarFallback>
+                  </Avatar>
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              {friends.length} {friends.length === 1 ? "friend" : "friends"}
+              {friends.length > 7 ? ` · +${friends.length - 7} more` : ""}
+            </p>
+          </div>
+        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {socialNotes.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Nothing new from your circle right now.</p>
+          ) : (
+            socialNotes.map((note) => (
+              <Button asChild key={note.text} size="sm" variant="outline">
+                <Link to={note.to}>{note.text}</Link>
+              </Button>
+            ))
+          )}
+        </div>
+      </section>
 
       {nextRoom && (
         <section className="surface mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 p-5">
